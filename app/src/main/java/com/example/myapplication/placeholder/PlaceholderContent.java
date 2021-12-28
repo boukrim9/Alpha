@@ -1,5 +1,14 @@
 package com.example.myapplication.placeholder;
 
+import androidx.annotation.NonNull;
+
+import com.example.myapplication.ItemListFragment;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -23,13 +32,37 @@ public class PlaceholderContent {
      */
     public static final Map<String, PlaceholderItem> ITEM_MAP = new HashMap<String, PlaceholderItem>();
 
-    private static final int COUNT = 25;
+    private static final int COUNT = 5;
 
     static {
         // Add some sample items.
-        for (int i = 1; i <= COUNT; i++) {
-            addItem(createPlaceholderItem(i));
-        }
+        //for (int i = 1; i <= COUNT; i++) {
+          // addItem(createPlaceholderItem(i));
+        //}
+    startup();
+
+    }
+    public static void startup (){
+        DatabaseReference dataRef = FirebaseDatabase.getInstance().getReference();
+
+        ValueEventListener eventListener = new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                for (DataSnapshot data : snapshot.getChildren())
+                {
+                    PlaceholderItem item = new PlaceholderItem(data.getKey(),data.child("label").getValue(String.class),data.child("price").getValue(Float.class).toString());
+                    addItem(item);
+                }
+                ItemListFragment.adapter.notifyDataSetChanged();
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+
+            }
+        };
+        dataRef.addListenerForSingleValueEvent(eventListener);
+
     }
 
     private static void addItem(PlaceholderItem dish) {

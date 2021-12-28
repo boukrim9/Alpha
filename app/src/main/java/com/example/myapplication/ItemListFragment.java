@@ -119,13 +119,17 @@ public class ItemListFragment extends Fragment {
             View.OnClickListener onClickListener,
             View.OnContextClickListener onContextClickListener
     ) {
-
-        recyclerView.setAdapter(new SimpleItemRecyclerViewAdapter(
+        adapter = new SimpleItemRecyclerViewAdapter(
                 PlaceholderContent.ITEMS,
                 onClickListener,
                 onContextClickListener
-        ));
+        );
+                recyclerView.setAdapter(adapter);
     }
+
+
+    public static SimpleItemRecyclerViewAdapter adapter;
+
 
     @Override
     public void onDestroyView() {
