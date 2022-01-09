@@ -1,5 +1,7 @@
 package com.example.myapplication.placeholder;
 
+import android.util.Log;
+
 import androidx.annotation.NonNull;
 
 import com.example.myapplication.ItemListFragment;
@@ -43,15 +45,28 @@ public class PlaceholderContent {
 
     }
     public static void startup (){
+
+
+        FirebaseDatabase.getInstance().setPersistenceEnabled(true);
+        FirebaseDatabase.getInstance().getReference().keepSynced(true);
+
+
+
+
+
         DatabaseReference dataRef = FirebaseDatabase.getInstance().getReference();
 
         ValueEventListener eventListener = new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
+
+
+
                 for (DataSnapshot data : snapshot.getChildren())
                 {
                     PlaceholderItem item = new PlaceholderItem(data.getKey(),data.child("label").getValue(String.class),data.child("price").getValue(Float.class).toString());
                     addItem(item);
+
                 }
                 ItemListFragment.adapter.notifyDataSetChanged();
             }
@@ -61,7 +76,9 @@ public class PlaceholderContent {
 
             }
         };
-        dataRef.addListenerForSingleValueEvent(eventListener);
+        //dataRef.addListenerForSingleValueEvent(eventListener);
+
+        dataRef.addValueEventListener(eventListener);
 
     }
 
